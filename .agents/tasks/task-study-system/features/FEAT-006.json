@@ -2,7 +2,7 @@
   "id": "FEAT-006",
   "type": "feat",
   "description": "Three Tasks tab improvements: transparent scrollbar in Board View, move-to dropdown in List View, and inline column editing in Board View with column badge on TaskCard.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add scrollbar-hide CSS utility to src/index.css and apply to BoardView container",
     "Add onMove prop to TaskCard and ListView, implement move-to dropdown on TaskCard",
@@ -24,5 +24,5 @@
     "cd /projects/sandbox/study && npm run build"
   ],
   "blocked_reason": null,
-  "findings": null
+  "findings": "All three improvements implemented and build passes. The scrollbar-hide class uses standard CSS to hide scrollbars across browsers while preserving scroll functionality. The move-to dropdown uses a simple popover that appears on button click with ArrowRightLeft icon. Inline column editing uses a controlled input that saves on Enter/blur and cancels on Escape. Column badge shows on every TaskCard using useColumnStore."
 }
