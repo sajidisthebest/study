@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Build the Daily Log Input Dashboard, Smart To-Do List with List/Board views, bulk actions, drag-drop Kanban board, and the main dashboard page with urgency sections and exam countdown.",
-  "status": "pending",
+  "status": "completed",
   "steps": [
     "Create src/pages/DailyLog.tsx - Quick input form: subject dropdown -> paper dropdown (conditional on subject) -> 'what was taught' textarea -> 'homework' textarea -> due date picker -> save button. Form auto-creates a Task entry from homework. Mobile-optimized with large touch targets.",
     "Create src/pages/Dashboard.tsx - Main dashboard showing: (1) Exam countdown card if active exam <30 days, (2) 'Due Tonight' task cards at top, (3) Mini calendar widget showing today's classes and due items, (4) Quick input shortcut button to daily log, (5) Stats summary (tasks due, revision pending, streak).",
@@ -34,5 +34,5 @@
     "cd /projects/sandbox/study && npm run build"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Had to install tslib dependency (required by react-remove-scroll used in Sheet/Dialog components). Chunk size warning for production bundle >500KB but build completes. react-day-picker v10 API used for Calendar (mode/selected/onSelect props). useToastUndo implemented using DOM-based toast injection since no global toast context was set up. @dnd-kit/sortable v10 with @dnd-kit/core v6 used for drag-drop in BoardView."
 }
