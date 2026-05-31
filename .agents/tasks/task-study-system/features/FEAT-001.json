@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "chore",
   "description": "Initialize Vite React TypeScript project with all dependencies, configure Tailwind CSS, shadcn/ui, Zustand, @dnd-kit, TanStack Table, and set up project structure with types, stores, routing, and seed data.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Initialize Vite project with React + TypeScript template in /projects/sandbox/study/ using 'npm create vite@latest . -- --template react-ts'",
     "Install core dependencies: react-router-dom, zustand, @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities, @tanstack/react-table, date-fns, lucide-react, uuid, clsx, tailwind-merge",
@@ -34,5 +34,5 @@
     "test -f /projects/sandbox/study/netlify.toml"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Used react-day-picker v10 (latest) which has a different API than v8 used by original shadcn docs. Calendar component adapted to v10 API. TypeScript v7 deprecated baseUrl in tsconfig so used paths without baseUrl. Vite alias handles @ resolution at build time. All shadcn/ui components created manually since the CLI timed out. Build produces dist/ successfully."
 }
