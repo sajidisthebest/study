@@ -18,8 +18,10 @@ import { useTrackerStore } from "@/stores/useTrackerStore";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 
 export function SelfStudyTracker() {
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
-  const entries = useTrackerStore((s) => s.getEntriesByType("self_study"));
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
+  const allEntries = useTrackerStore((s) => s.entries);
+  const entries = useMemo(() => allEntries.filter((e) => e.deletedAt === null && e.type === "self_study"), [allEntries]);
   const addEntry = useTrackerStore((s) => s.addEntry);
 
   const [showForm, setShowForm] = useState(false);

@@ -4,17 +4,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useRevisionStore } from "@/stores/useRevisionStore";
 import { RevisionCard } from "@/components/revision/RevisionCard";
 import { EmptyState } from "@/components/common/EmptyState";
-import { format } from "date-fns";
+import { format, endOfDay, startOfDay, addDays, isWithinInterval } from "date-fns";
 
 export function Revision() {
-  const getItemsDueToday = useRevisionStore((s) => s.getItemsDueToday);
-  const getItemsDueThisWeek = useRevisionStore((s) => s.getItemsDueThisWeek);
-  const getCompletedToday = useRevisionStore((s) => s.getCompletedToday);
-  const activeSchedules = useRevisionStore((s) => s.getActiveSchedules());
+  const allSchedules = useRevisionStore((s) => s.schedules);
+  const activeSchedules = useMemo(() => allSchedules.filter((s) => s.deletedAt === null), [allSchedules]);
 
-  const dueToday = useMemo(() => getItemsDueToday(), [getItemsDueToday]);
-  const dueThisWeek = useMemo(() => getItemsDueThisWeek(), [getItemsDueThisWeek]);
-  const completedToday = useMemo(() => getCompletedToday(), [getCompletedToday]);
+  const dueToday = useMemo(() => {
+    const todayEnd = endOfDay(new Date()).toISOString();
+    return activeSchedules.filter(
+      (s) => s.status !== "mastered" && s.nextReviewDate <= todayEnd
+    );
+  }, [activeSchedules]);
+
+  const dueThisWeek = useMemo(() => {
+    const todayEndDate = endOfDay(new Date());
+    const weekEnd = endOfDay(addDays(new Date(), 7));
+    return activeSchedules.filter((s) => {
+      if (s.status === "mastered") return false;
+      const reviewDate = new Date(s.nextReviewDate);
+      return isWithinInterval(reviewDate, { start: todayEndDate, end: weekEnd });
+    });
+  }, [activeSchedules]);
+
+  const completedToday = useMemo(() => {
+    const todayStart = startOfDay(new Date());
+    const todayEndDate = endOfDay(new Date());
+    return activeSchedules.filter((s) => {
+      if (!s.lastReviewedAt) return false;
+      const reviewedAt = new Date(s.lastReviewedAt);
+      return isWithinInterval(reviewedAt, { start: todayStart, end: todayEndDate });
+    });
+  }, [activeSchedules]);
 
   const totalInQueue = activeSchedules.filter((s) => s.status !== "mastered").length;
   const reviewedTodayCount = completedToday.length;

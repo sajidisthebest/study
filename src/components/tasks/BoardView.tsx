@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -77,7 +77,8 @@ export function BoardView({
   onEdit,
   onAddTask,
 }: BoardViewProps) {
-  const columns = useColumnStore((s) => s.getActiveColumns());
+  const allColumns = useColumnStore((s) => s.columns);
+  const columns = useMemo(() => allColumns.filter((c) => c.deletedAt === null), [allColumns]);
   const moveTask = useTaskStore((s) => s.moveTask);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 

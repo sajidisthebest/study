@@ -32,11 +32,14 @@ export function DailyLog() {
   const [homework, setHomework] = useState("");
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
 
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
   const addLog = useDailyLogStore((s) => s.addLog);
-  const logs = useDailyLogStore((s) => s.getActiveLogs());
+  const allLogs = useDailyLogStore((s) => s.logs);
+  const logs = useMemo(() => allLogs.filter((l) => l.deletedAt === null), [allLogs]);
   const addTask = useTaskStore((s) => s.addTask);
-  const columns = useColumnStore((s) => s.getActiveColumns());
+  const allColumns = useColumnStore((s) => s.columns);
+  const columns = useMemo(() => allColumns.filter((c) => c.deletedAt === null), [allColumns]);
 
   const selectedSubject = subjects.find((s) => s.id === subjectId);
   const papers = selectedSubject?.papers.filter((p) => !p.deletedAt) || [];

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,8 +28,10 @@ export function BulkActionBar({
   onMove,
   onTag,
 }: BulkActionBarProps) {
-  const columns = useColumnStore((s) => s.getActiveColumns());
-  const tags = useTagStore((s) => s.getActiveTags());
+  const allColumns = useColumnStore((s) => s.columns);
+  const columns = useMemo(() => allColumns.filter((c) => c.deletedAt === null), [allColumns]);
+  const allTags = useTagStore((s) => s.tags);
+  const tags = useMemo(() => allTags.filter((t) => t.deletedAt === null), [allTags]);
 
   if (selectedCount === 0) return null;
 

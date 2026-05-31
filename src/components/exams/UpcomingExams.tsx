@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { format, differenceInDays } from "date-fns";
 import { Plus, Calendar, Trash2, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,14 @@ import { useExamStore } from "@/stores/useExamStore";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 
 export function UpcomingExams() {
-  const exams = useExamStore((s) => s.getActiveExams());
+  const allExams = useExamStore((s) => s.exams);
+  const exams = useMemo(() => allExams.filter((e) => e.deletedAt === null), [allExams]);
   const addExam = useExamStore((s) => s.addExam);
   const updateExam = useExamStore((s) => s.updateExam);
   const deleteExam = useExamStore((s) => s.deleteExam);
   const addExamSubject = useExamStore((s) => s.addExamSubject);
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
 
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({

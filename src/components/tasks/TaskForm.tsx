@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -47,9 +47,12 @@ interface TaskFormProps {
 }
 
 export function TaskForm({ open, onOpenChange, editTask }: TaskFormProps) {
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
-  const tags = useTagStore((s) => s.getActiveTags());
-  const columns = useColumnStore((s) => s.getActiveColumns());
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
+  const allTags = useTagStore((s) => s.tags);
+  const tags = useMemo(() => allTags.filter((t) => t.deletedAt === null), [allTags]);
+  const allColumns = useColumnStore((s) => s.columns);
+  const columns = useMemo(() => allColumns.filter((c) => c.deletedAt === null), [allColumns]);
   const addTask = useTaskStore((s) => s.addTask);
   const updateTask = useTaskStore((s) => s.updateTask);
 

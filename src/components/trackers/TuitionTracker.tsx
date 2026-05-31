@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { Plus, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,10 @@ import { useTaskStore } from "@/stores/useTaskStore";
 import { useColumnStore } from "@/stores/useColumnStore";
 
 export function TuitionTracker() {
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
-  const entries = useTrackerStore((s) => s.getEntriesByType("tuition"));
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
+  const allEntries = useTrackerStore((s) => s.entries);
+  const entries = useMemo(() => allEntries.filter((e) => e.deletedAt === null && e.type === "tuition"), [allEntries]);
   const addEntry = useTrackerStore((s) => s.addEntry);
   const addTask = useTaskStore((s) => s.addTask);
   const columns = useColumnStore((s) => s.columns);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, Pencil, Trash2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,9 +43,11 @@ interface FormData {
 }
 
 export function Routine() {
-  const { addEntry, updateEntry, deleteEntry, getActiveEntries } = useRoutineStore();
-  const entries = getActiveEntries();
-  const subjects = useSubjectStore((s) => s.subjects).filter((s) => s.deletedAt === null);
+  const { addEntry, updateEntry, deleteEntry } = useRoutineStore();
+  const allEntries = useRoutineStore((s) => s.entries);
+  const entries = useMemo(() => allEntries.filter((e) => e.deletedAt === null), [allEntries]);
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);

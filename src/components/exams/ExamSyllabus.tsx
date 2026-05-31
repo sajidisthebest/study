@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,9 +18,11 @@ import { useTrackerStore } from "@/stores/useTrackerStore";
 import type { ExamChapter } from "@/types";
 
 export function ExamSyllabus() {
-  const exams = useExamStore((s) => s.getActiveExams());
+  const allExams = useExamStore((s) => s.exams);
+  const exams = useMemo(() => allExams.filter((e) => e.deletedAt === null), [allExams]);
   const updateExamSubject = useExamStore((s) => s.updateExamSubject);
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
   const collegeProgress = useTrackerStore((s) => s.collegeProgress);
 
   const [selectedExamId, setSelectedExamId] = useState<string>("");

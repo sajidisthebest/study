@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +10,27 @@ import { useRevisionStore } from "@/stores/useRevisionStore";
 import type { TopicStatus } from "@/types";
 
 export function CollegeTracker() {
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
   const collegeProgress = useTrackerStore((s) => s.collegeProgress);
   const addChapter = useTrackerStore((s) => s.addChapter);
   const addTopic = useTrackerStore((s) => s.addTopic);
   const setTopicStatus = useTrackerStore((s) => s.setTopicStatus);
-  const overallProgress = useTrackerStore((s) => s.getOverallProgress());
   const addRevision = useRevisionStore((s) => s.addSchedule);
+
+  const overallProgress = useMemo(() => {
+    let total = 0;
+    let completed = 0;
+    for (const p of collegeProgress) {
+      for (const ch of p.chapters) {
+        for (const t of ch.topics) {
+          total++;
+          if (t.status === "completed") completed++;
+        }
+      }
+    }
+    return { total, completed };
+  }, [collegeProgress]);
 
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
   const [newChapterName, setNewChapterName] = useState<Record<string, string>>({});

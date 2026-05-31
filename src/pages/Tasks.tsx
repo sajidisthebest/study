@@ -36,13 +36,16 @@ export function Tasks() {
   const [searchQuery, setSearchQuery] = useState("");
   const [, setAddColumnId] = useState<string | null>(null);
 
-  const tasks = useTaskStore((s) => s.getActiveTasks());
+  const allTasks = useTaskStore((s) => s.tasks);
+  const tasks = useMemo(() => allTasks.filter((t) => t.deletedAt === null), [allTasks]);
   const deleteTask = useTaskStore((s) => s.deleteTask);
   const restoreTask = useTaskStore((s) => s.restoreTask);
   const moveTask = useTaskStore((s) => s.moveTask);
   const updateTask = useTaskStore((s) => s.updateTask);
-  const subjects = useSubjectStore((s) => s.getActiveSubjects());
-  const tags = useTagStore((s) => s.getActiveTags());
+  const allSubjects = useSubjectStore((s) => s.subjects);
+  const subjects = useMemo(() => allSubjects.filter((s) => s.deletedAt === null), [allSubjects]);
+  const allTags = useTagStore((s) => s.tags);
+  const tags = useMemo(() => allTags.filter((t) => t.deletedAt === null), [allTags]);
   const { scheduleDelete } = useToastUndo();
 
   const changeView = (mode: ViewMode) => {
