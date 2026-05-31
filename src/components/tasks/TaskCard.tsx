@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { format, isToday, isPast, isThisWeek } from "date-fns";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ArrowRightLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 import { useTagStore } from "@/stores/useTagStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
+import { useColumnStore } from "@/stores/useColumnStore";
 import type { Task } from "@/types";
 
 interface TaskCardProps {
@@ -18,6 +19,7 @@ interface TaskCardProps {
   onSelect?: (id: string) => void;
   onDelete?: (id: string) => void;
   onEdit?: (task: Task) => void;
+  onMove?: (id: string, columnId: string) => void;
 }
 
 function getDueDateColor(dueDate: string | null): string {
@@ -78,11 +80,16 @@ export function TaskCard({
   onSelect,
   onDelete,
   onEdit,
+  onMove,
 }: TaskCardProps) {
   const [hovered, setHovered] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
   const subjects = useSubjectStore((s) => s.subjects);
   const tags = useTagStore((s) => s.tags);
   const cardDisplayFields = useSettingsStore((s) => s.cardDisplayFields);
+  const allColumns = useColumnStore((s) => s.columns);
+  const columns = useMemo(() => allColumns.filter((c) => c.deletedAt === null), [allColumns]);
+  const currentColumn = columns.find((c) => c.id === task.columnId);
 
   // Default fields if none configured
   const fields = cardDisplayFields.length > 0
@@ -170,8 +177,43 @@ export function TaskCard({
               ))}
             </div>
           )}
+          {currentColumn && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground mt-1.5">
+              {currentColumn.name}
+            </span>
+          )}
         </div>
         <div className={cn("flex flex-col gap-1", !hovered && !selectionMode && "md:opacity-0")}>
+          {onMove && (
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={() => setMoveOpen(!moveOpen)}
+              >
+                <ArrowRightLeft className="h-3.5 w-3.5" />
+              </Button>
+              {moveOpen && (
+                <div className="absolute right-0 top-7 z-50 min-w-[140px] bg-popover border rounded-md shadow-md py-1">
+                  {columns
+                    .filter((c) => c.id !== task.columnId)
+                    .map((col) => (
+                      <button
+                        key={col.id}
+                        className="w-full px-3 py-1.5 text-xs text-left hover:bg-accent hover:text-accent-foreground"
+                        onClick={() => {
+                          onMove(task.id, col.id);
+                          setMoveOpen(false);
+                        }}
+                      >
+                        {col.name}
+                      </button>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
           <Button
             variant="ghost"
             size="icon"

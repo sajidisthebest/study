@@ -16,8 +16,9 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Plus } from "lucide-react";
+import { Plus, Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TaskCard } from "./TaskCard";
 import { useColumnStore } from "@/stores/useColumnStore";
@@ -79,8 +80,14 @@ export function BoardView({
 }: BoardViewProps) {
   const allColumns = useColumnStore((s) => s.columns);
   const columns = useMemo(() => allColumns.filter((c) => c.deletedAt === null), [allColumns]);
+  const updateColumn = useColumnStore((s) => s.updateColumn);
+  const addColumn = useColumnStore((s) => s.addColumn);
   const moveTask = useTaskStore((s) => s.moveTask);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
+  const [editingColumnName, setEditingColumnName] = useState("");
+  const [addingColumn, setAddingColumn] = useState(false);
+  const [newColumnName, setNewColumnName] = useState("");
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 8 },
@@ -117,6 +124,32 @@ export function BoardView({
     }
   };
 
+  const startEditingColumn = (columnId: string, currentName: string) => {
+    setEditingColumnId(columnId);
+    setEditingColumnName(currentName);
+  };
+
+  const saveColumnName = () => {
+    if (editingColumnId && editingColumnName.trim()) {
+      updateColumn(editingColumnId, editingColumnName.trim());
+    }
+    setEditingColumnId(null);
+    setEditingColumnName("");
+  };
+
+  const cancelEditingColumn = () => {
+    setEditingColumnId(null);
+    setEditingColumnName("");
+  };
+
+  const handleAddColumn = () => {
+    if (newColumnName.trim()) {
+      addColumn(newColumnName.trim());
+      setNewColumnName("");
+      setAddingColumn(false);
+    }
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -124,7 +157,7 @@ export function BoardView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide">
         {columns.map((column) => {
           const columnTasks = tasks.filter((t) => t.columnId === column.id);
           return (
@@ -134,10 +167,54 @@ export function BoardView({
             >
               <div className="bg-muted/50 rounded-lg p-3 h-full flex flex-col">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold">{column.name}</h3>
-                  <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
-                    {columnTasks.length}
-                  </span>
+                  {editingColumnId === column.id ? (
+                    <div className="flex items-center gap-1 flex-1">
+                      <Input
+                        value={editingColumnName}
+                        onChange={(e) => setEditingColumnName(e.target.value)}
+                        className="h-7 text-sm"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveColumnName();
+                          if (e.key === "Escape") cancelEditingColumn();
+                        }}
+                        onBlur={saveColumnName}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={saveColumnName}
+                      >
+                        <Check className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={cancelEditingColumn}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-1">
+                        <h3 className="text-sm font-semibold">{column.name}</h3>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity"
+                          onClick={() => startEditingColumn(column.id, column.name)}
+                        >
+                          <Pencil className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
+                        {columnTasks.length}
+                      </span>
+                    </>
+                  )}
                 </div>
                 <SortableContext
                   id={column.id}
@@ -172,6 +249,52 @@ export function BoardView({
             </div>
           );
         })}
+        {/* Add Column Button */}
+        <div className="flex-shrink-0 w-[280px] md:w-[300px] snap-center">
+          {addingColumn ? (
+            <div className="bg-muted/50 rounded-lg p-3">
+              <Input
+                value={newColumnName}
+                onChange={(e) => setNewColumnName(e.target.value)}
+                placeholder="Column name..."
+                className="h-8 text-sm mb-2"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleAddColumn();
+                  if (e.key === "Escape") {
+                    setAddingColumn(false);
+                    setNewColumnName("");
+                  }
+                }}
+              />
+              <div className="flex gap-1">
+                <Button size="sm" className="h-7 text-xs" onClick={handleAddColumn}>
+                  Add
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    setAddingColumn(false);
+                    setNewColumnName("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-full h-12 border-dashed text-muted-foreground"
+              onClick={() => setAddingColumn(true)}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Column
+            </Button>
+          )}
+        </div>
       </div>
       <DragOverlay>
         {activeTask && <TaskCard task={activeTask} />}

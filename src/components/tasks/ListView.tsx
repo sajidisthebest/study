@@ -13,6 +13,7 @@ interface ListViewProps {
   onSelectSection: (ids: string[]) => void;
   onDelete: (id: string) => void;
   onEdit: (task: Task) => void;
+  onMove?: (id: string, columnId: string) => void;
 }
 
 interface Section {
@@ -39,6 +40,7 @@ export function ListView({
   onSelectSection,
   onDelete,
   onEdit,
+  onMove,
 }: ListViewProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
@@ -108,6 +110,7 @@ export function ListView({
                       onSelect={onSelect}
                       onDelete={onDelete}
                       onEdit={onEdit}
+                      onMove={onMove}
                     />
                   ))}
                 </div>

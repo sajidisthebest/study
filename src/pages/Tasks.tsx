@@ -143,6 +143,13 @@ export function Tasks() {
     setFormOpen(true);
   }, []);
 
+  const handleMove = useCallback(
+    (id: string, columnId: string) => {
+      moveTask(id, columnId);
+    },
+    [moveTask]
+  );
+
   const handleAddTask = useCallback((columnId?: string) => {
     setEditTask(null);
     if (columnId) setAddColumnId(columnId);
@@ -258,6 +265,7 @@ export function Tasks() {
           onSelectSection={handleSelectSection}
           onDelete={handleDelete}
           onEdit={handleEdit}
+          onMove={handleMove}
         />
       ) : (
         <BoardView

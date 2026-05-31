@@ -1,0 +1,28 @@
+{
+  "id": "FEAT-006",
+  "type": "feat",
+  "description": "Three Tasks tab improvements: transparent scrollbar in Board View, move-to dropdown in List View, and inline column editing in Board View with column badge on TaskCard.",
+  "status": "in_progress",
+  "steps": [
+    "Add scrollbar-hide CSS utility to src/index.css and apply to BoardView container",
+    "Add onMove prop to TaskCard and ListView, implement move-to dropdown on TaskCard",
+    "Pass handleMove callback from Tasks.tsx to ListView",
+    "Add inline column editing to BoardView headers and add-column button",
+    "Show column name badge on TaskCard using useColumnStore"
+  ],
+  "acceptance_criteria": [
+    "Board view horizontal scrollbar is invisible but scroll still works",
+    "TaskCard shows a move-to dropdown on hover with available columns",
+    "ListView passes onMove through to TaskCard",
+    "Tasks.tsx handles move by calling moveTask from store",
+    "Board view column headers can be edited inline with pencil icon",
+    "Board view has a + button to add new columns",
+    "TaskCard shows a small column badge label",
+    "npm run build succeeds without errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/study && npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": null
+}
