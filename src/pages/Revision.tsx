@@ -3,6 +3,7 @@ import { Brain, CheckCircle2, Calendar, PartyPopper } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRevisionStore } from "@/stores/useRevisionStore";
 import { RevisionCard } from "@/components/revision/RevisionCard";
+import { EmptyState } from "@/components/common/EmptyState";
 import { format } from "date-fns";
 
 export function Revision() {
@@ -31,6 +32,16 @@ export function Revision() {
       <h1 className="text-2xl font-bold">Revision</h1>
       <p className="text-sm text-muted-foreground">Spaced repetition review schedule</p>
 
+      {activeSchedules.length === 0 ? (
+        <EmptyState
+          icon={Brain}
+          title="Your revision queue is empty"
+          description="Your revision queue is empty. Mark topics as completed in your trackers to add them here."
+          actionLabel="Go to Trackers"
+          actionTo="/trackers"
+        />
+      ) : (
+      <>
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2">
         <Card>
@@ -110,6 +121,8 @@ export function Revision() {
             <RevisionCard key={item.id} item={item} showActions={false} />
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );

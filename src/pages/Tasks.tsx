@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { List, LayoutGrid, Plus, Search } from "lucide-react";
+import { List, LayoutGrid, Plus, Search, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +13,7 @@ import { ListView } from "@/components/tasks/ListView";
 import { BoardView } from "@/components/tasks/BoardView";
 import { BulkActionBar } from "@/components/tasks/BulkActionBar";
 import { TaskForm } from "@/components/tasks/TaskForm";
+import { EmptyState } from "@/components/common/EmptyState";
 import { useTaskStore } from "@/stores/useTaskStore";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 import { useTagStore } from "@/stores/useTagStore";
@@ -238,7 +239,15 @@ export function Tasks() {
       </div>
 
       {/* Views */}
-      {viewMode === "list" ? (
+      {tasks.length === 0 ? (
+        <EmptyState
+          icon={CheckSquare}
+          title="No tasks yet"
+          description="No tasks yet. Add homework from your Daily Log or create a task manually."
+          actionLabel="Add Task"
+          onAction={() => handleAddTask()}
+        />
+      ) : viewMode === "list" ? (
         <ListView
           tasks={filteredTasks}
           selectedIds={selectedIds}

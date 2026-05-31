@@ -8,6 +8,7 @@ import {
   Brain,
   ArrowRight,
   GraduationCap,
+  Flame,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,18 +18,32 @@ import { useRoutineStore } from "@/stores/useRoutineStore";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 import { useRevisionStore } from "@/stores/useRevisionStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
+import { useDailyLogStore } from "@/stores/useDailyLogStore";
+import { useTrackerStore } from "@/stores/useTrackerStore";
 import { ExamCountdown } from "@/components/exams/ExamCountdown";
+import { StatsPanel } from "@/components/stats/StatsPanel";
+import { EmptyState } from "@/components/common/EmptyState";
+import { getStudyStreak } from "@/lib/streak";
 
 export function Dashboard() {
   const tasks = useTaskStore((s) => s.getActiveTasks());
+  const allTasks = useTaskStore((s) => s.tasks);
   const routineEntries = useRoutineStore((s) => s.entries);
   const subjects = useSubjectStore((s) => s.subjects);
   const revisionItems = useRevisionStore((s) => s.schedules);
   const examModeActive = useSettingsStore((s) => s.examModeActive);
   const getItemsDueToday = useRevisionStore((s) => s.getItemsDueToday);
+  const logs = useDailyLogStore((s) => s.logs);
+  const trackerEntries = useTrackerStore((s) => s.entries);
 
   const today = new Date();
   const dayOfWeek = today.getDay();
+
+  // Study streak
+  const streak = useMemo(
+    () => getStudyStreak(allTasks, logs, trackerEntries, revisionItems),
+    [allTasks, logs, trackerEntries, revisionItems]
+  );
 
   // Due tonight tasks
   const dueTonight = useMemo(
@@ -62,6 +77,24 @@ export function Dashboard() {
     [routineEntries, dayOfWeek]
   );
 
+  // Check if dashboard is empty (no tasks, no logs, no routine)
+  const hasNoData = tasks.length === 0 && logs.length === 0 && routineEntries.length === 0;
+
+  if (hasNoData) {
+    return (
+      <div className="space-y-4 max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <EmptyState
+          icon={BookOpen}
+          title="Welcome!"
+          description="Start by logging what you learned today. Your dashboard will show tasks, streaks, and study stats as you use the app."
+          actionLabel="Go to Daily Log"
+          actionTo="/daily-log"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -81,7 +114,7 @@ export function Dashboard() {
       <ExamCountdown />
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         <Card>
           <CardContent className="p-3 text-center">
             <CheckSquare className="h-5 w-5 mx-auto text-red-500 mb-1" />
@@ -100,7 +133,14 @@ export function Dashboard() {
           <CardContent className="p-3 text-center">
             <Clock className="h-5 w-5 mx-auto text-blue-500 mb-1" />
             <p className="text-2xl font-bold">{todayRoutine.length}</p>
-            <p className="text-xs text-muted-foreground">Classes Today</p>
+            <p className="text-xs text-muted-foreground">Classes</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-3 text-center">
+            <Flame className="h-5 w-5 mx-auto text-orange-500 mb-1" />
+            <p className="text-2xl font-bold">{streak > 0 ? `${streak}` : "0"}</p>
+            <p className="text-xs text-muted-foreground">{streak > 0 ? "Streak \uD83D\uDD25" : "Streak"}</p>
           </CardContent>
         </Card>
       </div>
@@ -207,6 +247,9 @@ export function Dashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Stats Panel */}
+      <StatsPanel />
     </div>
   );
 }

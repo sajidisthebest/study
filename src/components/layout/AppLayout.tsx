@@ -9,8 +9,11 @@ import {
   Calendar,
   Clock,
   Settings,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationBanner } from "@/components/common/NotificationBanner";
+import { GlobalSearch } from "@/components/common/GlobalSearch";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -27,10 +30,20 @@ const navItems = [
 export function AppLayout() {
   return (
     <div className="flex h-screen bg-background">
+      {/* Global Search */}
+      <GlobalSearch />
+
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col border-r border-border">
-        <div className="flex h-14 items-center px-4 border-b border-border">
+        <div className="flex h-14 items-center justify-between px-4 border-b border-border">
           <h1 className="text-lg font-semibold">Study System</h1>
+          <button
+            onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground"
+            title="Search (Cmd+K)"
+          >
+            <Search className="h-4 w-4" />
+          </button>
         </div>
         <nav className="flex-1 overflow-y-auto p-2">
           {navItems.map((item) => (
@@ -57,6 +70,7 @@ export function AppLayout() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4 pb-20 md:pb-4">
+          <NotificationBanner />
           <Outlet />
         </div>
       </main>

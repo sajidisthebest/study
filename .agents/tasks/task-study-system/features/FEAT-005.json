@@ -2,7 +2,7 @@
   "id": "FEAT-005",
   "type": "feat",
   "description": "Polish, extras, and final integration: notifications/reminders, study streaks, statistics dashboard, global search, Supabase schema SQL file, and final build verification.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/components/common/GlobalSearch.tsx - Command palette (Cmd+K / Ctrl+K) that searches across all data: tasks, daily logs, exams, tracker entries, revision items. Uses shadcn Command component. Shows results grouped by type with navigation.",
     "Create src/components/stats/StatsPanel.tsx - Statistics overview: total study hours this week, tasks completed this week, revision items reviewed, current study streak (consecutive days with logged activity), subject-wise time distribution bar chart, completion rate percentage.",
