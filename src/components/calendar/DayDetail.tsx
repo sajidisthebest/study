@@ -27,7 +27,7 @@ export function DayDetail({ date, onClose }: DayDetailProps) {
 
   // Classes for this day of week
   const classes = entries
-    .filter((e) => e.dayOfWeek === dayOfWeek)
+    .filter((e) => e.deletedAt === null && e.dayOfWeek === dayOfWeek)
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   // Tasks due on this date

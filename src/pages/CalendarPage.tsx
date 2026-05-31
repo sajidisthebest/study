@@ -59,7 +59,7 @@ export function CalendarPage() {
     const dayOfWeek = date.getDay();
     const indicators: { type: FilterType; color: string }[] = [];
 
-    if (filters.classes && routineEntries.some((e) => e.dayOfWeek === dayOfWeek)) {
+    if (filters.classes && routineEntries.some((e) => e.deletedAt === null && e.dayOfWeek === dayOfWeek)) {
       indicators.push({ type: "classes", color: "bg-blue-500" });
     }
 

@@ -6,7 +6,7 @@ import { startOfDay, addDays, endOfDay, isWithinInterval } from "date-fns";
 
 interface RevisionState {
   schedules: RevisionSchedule[];
-  addSchedule: (schedule: Omit<RevisionSchedule, "id" | "deletedAt" | "reviewCount" | "intervals" | "status">) => void;
+  addSchedule: (schedule: Omit<RevisionSchedule, "id" | "deletedAt" | "reviewCount" | "intervals" | "status" | "lastReviewedAt">) => void;
   updateSchedule: (id: string, updates: Partial<RevisionSchedule>) => void;
   deleteSchedule: (id: string) => void;
   restoreSchedule: (id: string) => void;
@@ -26,7 +26,18 @@ export const useRevisionStore = create<RevisionState>()(
   persist(
     (set, get) => ({
       schedules: [],
-      addSchedule: (schedule) =>
+      addSchedule: (schedule) => {
+        // Dedup: don't create a duplicate if an active (non-deleted) revision
+        // already exists for the same topicName + subjectId + paperId
+        const existing = get().schedules.find(
+          (s) =>
+            s.deletedAt === null &&
+            s.topicName === schedule.topicName &&
+            s.subjectId === schedule.subjectId &&
+            s.paperId === schedule.paperId
+        );
+        if (existing) return;
+
         set((state) => ({
           schedules: [
             ...state.schedules,
@@ -36,10 +47,12 @@ export const useRevisionStore = create<RevisionState>()(
               reviewCount: 0,
               intervals: DEFAULT_INTERVALS,
               status: "pending",
+              lastReviewedAt: null,
               deletedAt: null,
             },
           ],
-        })),
+        }));
+      },
       updateSchedule: (id, updates) =>
         set((state) => ({
           schedules: state.schedules.map((s) =>
@@ -62,21 +75,24 @@ export const useRevisionStore = create<RevisionState>()(
         set((state) => ({
           schedules: state.schedules.map((s) => {
             if (s.id !== id) return s;
+            const now = new Date();
             const newCount = s.reviewCount + 1;
             if (newCount >= s.intervals.length) {
               return {
                 ...s,
                 reviewCount: newCount,
-                nextReviewDate: new Date().toISOString(),
+                nextReviewDate: now.toISOString(),
+                lastReviewedAt: now.toISOString(),
                 status: "mastered" as const,
               };
             }
             const nextInterval = s.intervals[newCount];
-            const nextDate = addDays(new Date(), nextInterval);
+            const nextDate = addDays(now, nextInterval);
             return {
               ...s,
               reviewCount: newCount,
               nextReviewDate: nextDate.toISOString(),
+              lastReviewedAt: now.toISOString(),
               status: "reviewed" as const,
             };
           }),
@@ -132,20 +148,9 @@ export const useRevisionStore = create<RevisionState>()(
         const todayEnd = endOfDay(new Date());
         return get().schedules.filter((s) => {
           if (s.deletedAt !== null) return false;
-          if (s.status === "mastered") {
-            const reviewDate = new Date(s.nextReviewDate);
-            return isWithinInterval(reviewDate, { start: todayStart, end: todayEnd });
-          }
-          // Items reviewed today have had their nextReviewDate moved forward,
-          // and reviewCount > 0. We check if last action was today.
-          if (s.reviewCount > 0 && s.status === "reviewed") {
-            // The nextReviewDate was set when reviewed, so the "reviewed at" date
-            // is nextReviewDate minus the interval
-            const interval = s.intervals[Math.min(s.reviewCount, s.intervals.length - 1)];
-            const reviewedAt = addDays(new Date(s.nextReviewDate), -interval);
-            return isWithinInterval(reviewedAt, { start: todayStart, end: todayEnd });
-          }
-          return false;
+          if (!s.lastReviewedAt) return false;
+          const reviewedAt = new Date(s.lastReviewedAt);
+          return isWithinInterval(reviewedAt, { start: todayStart, end: todayEnd });
         });
       },
     }),

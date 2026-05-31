@@ -101,6 +101,7 @@ export interface RevisionSchedule {
   paperId: string | null;
   firstStudiedAt: string;
   nextReviewDate: string;
+  lastReviewedAt: string | null;
   reviewCount: number;
   intervals: number[];
   status: "pending" | "reviewed" | "mastered";
@@ -140,6 +141,7 @@ export interface RoutineEntry {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
+  deletedAt: string | null;
 }
 
 export type Theme = "dark" | "light" | "system";

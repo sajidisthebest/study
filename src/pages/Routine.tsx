@@ -43,7 +43,8 @@ interface FormData {
 }
 
 export function Routine() {
-  const { entries, addEntry, updateEntry, deleteEntry } = useRoutineStore();
+  const { addEntry, updateEntry, deleteEntry, getActiveEntries } = useRoutineStore();
+  const entries = getActiveEntries();
   const subjects = useSubjectStore((s) => s.subjects).filter((s) => s.deletedAt === null);
 
   const [showForm, setShowForm] = useState(false);

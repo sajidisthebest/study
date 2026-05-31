@@ -72,13 +72,13 @@ export function Dashboard() {
   const todayRoutine = useMemo(
     () =>
       routineEntries
-        .filter((e) => e.dayOfWeek === dayOfWeek)
+        .filter((e) => e.deletedAt === null && e.dayOfWeek === dayOfWeek)
         .sort((a, b) => a.startTime.localeCompare(b.startTime)),
     [routineEntries, dayOfWeek]
   );
 
   // Check if dashboard is empty (no tasks, no logs, no routine)
-  const hasNoData = tasks.length === 0 && logs.length === 0 && routineEntries.length === 0;
+  const hasNoData = tasks.length === 0 && logs.length === 0 && routineEntries.filter((e) => e.deletedAt === null).length === 0;
 
   if (hasNoData) {
     return (

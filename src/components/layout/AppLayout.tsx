@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   CheckSquare,
@@ -10,10 +11,17 @@ import {
   Clock,
   Settings,
   Search,
+  MoreHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationBanner } from "@/components/common/NotificationBanner";
 import { GlobalSearch } from "@/components/common/GlobalSearch";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -27,7 +35,13 @@ const navItems = [
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
+const mobileMainNav = navItems.slice(0, 4);
+const mobileMoreNav = navItems.slice(4);
+
 export function AppLayout() {
+  const [moreOpen, setMoreOpen] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen bg-background">
       {/* Global Search */}
@@ -77,7 +91,7 @@ export function AppLayout() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t border-border bg-background px-2 py-2">
-        {navItems.slice(0, 5).map((item) => (
+        {mobileMainNav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -95,7 +109,38 @@ export function AppLayout() {
             <span>{item.label}</span>
           </NavLink>
         ))}
+        <button
+          onClick={() => setMoreOpen(true)}
+          className="flex flex-col items-center gap-1 px-2 py-1 text-xs text-muted-foreground transition-colors"
+        >
+          <MoreHorizontal className="h-5 w-5" />
+          <span>More</span>
+        </button>
       </nav>
+
+      {/* More menu sheet */}
+      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+        <SheetContent side="bottom" className="pb-safe">
+          <SheetHeader>
+            <SheetTitle>More Pages</SheetTitle>
+          </SheetHeader>
+          <nav className="grid grid-cols-3 gap-4 py-4">
+            {mobileMoreNav.map((item) => (
+              <button
+                key={item.to}
+                onClick={() => {
+                  navigate(item.to);
+                  setMoreOpen(false);
+                }}
+                className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted transition-colors"
+              >
+                <item.icon className="h-6 w-6" />
+                <span className="text-xs font-medium">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
