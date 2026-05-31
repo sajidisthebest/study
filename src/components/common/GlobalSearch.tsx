@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CheckSquare,
@@ -25,11 +25,16 @@ export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const tasks = useTaskStore((s) => s.getActiveTasks());
-  const logs = useDailyLogStore((s) => s.getActiveLogs());
-  const exams = useExamStore((s) => s.getActiveExams());
-  const revisionItems = useRevisionStore((s) => s.getActiveSchedules());
+  const allTasks = useTaskStore((s) => s.tasks);
+  const allLogs = useDailyLogStore((s) => s.logs);
+  const allExams = useExamStore((s) => s.exams);
+  const allRevisionItems = useRevisionStore((s) => s.schedules);
   const subjects = useSubjectStore((s) => s.subjects);
+
+  const tasks = useMemo(() => allTasks.filter((t) => t.deletedAt === null), [allTasks]);
+  const logs = useMemo(() => allLogs.filter((l) => l.deletedAt === null), [allLogs]);
+  const exams = useMemo(() => allExams.filter((e) => e.deletedAt === null), [allExams]);
+  const revisionItems = useMemo(() => allRevisionItems.filter((s) => s.deletedAt === null), [allRevisionItems]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {

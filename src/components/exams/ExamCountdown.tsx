@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { differenceInDays, differenceInHours } from "date-fns";
 import { GraduationCap, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { useSubjectStore } from "@/stores/useSubjectStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 
 export function ExamCountdown() {
-  const exams = useExamStore((s) => s.getActiveExams());
+  const exams = useExamStore((s) => s.exams);
   const subjects = useSubjectStore((s) => s.subjects);
   const setExamModeActive = useSettingsStore((s) => s.setExamModeActive);
   const [, setTick] = useState(0);
@@ -22,7 +22,7 @@ export function ExamCountdown() {
   const nearestExam = useMemo(() => {
     const now = new Date();
     const upcoming = exams
-      .filter((e) => e.type === "upcoming" && new Date(e.startDate) > now)
+      .filter((e) => e.deletedAt === null && e.type === "upcoming" && new Date(e.startDate) > now)
       .sort(
         (a, b) =>
           new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -30,13 +30,17 @@ export function ExamCountdown() {
     return upcoming[0] || null;
   }, [exams]);
 
-  // Auto-activate exam mode
+  // Auto-activate exam mode - use a ref to prevent re-render loops
+  const prevExamModeRef = useRef<boolean | null>(null);
   useEffect(() => {
+    let shouldBeActive = false;
     if (nearestExam) {
       const daysUntil = differenceInDays(new Date(nearestExam.startDate), new Date());
-      setExamModeActive(daysUntil < 7);
-    } else {
-      setExamModeActive(false);
+      shouldBeActive = daysUntil < 7;
+    }
+    if (prevExamModeRef.current !== shouldBeActive) {
+      prevExamModeRef.current = shouldBeActive;
+      setExamModeActive(shouldBeActive);
     }
   }, [nearestExam, setExamModeActive]);
 

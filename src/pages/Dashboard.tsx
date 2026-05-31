@@ -26,15 +26,15 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { getStudyStreak } from "@/lib/streak";
 
 export function Dashboard() {
-  const tasks = useTaskStore((s) => s.getActiveTasks());
   const allTasks = useTaskStore((s) => s.tasks);
   const routineEntries = useRoutineStore((s) => s.entries);
   const subjects = useSubjectStore((s) => s.subjects);
   const revisionItems = useRevisionStore((s) => s.schedules);
   const examModeActive = useSettingsStore((s) => s.examModeActive);
-  const getItemsDueToday = useRevisionStore((s) => s.getItemsDueToday);
   const logs = useDailyLogStore((s) => s.logs);
   const trackerEntries = useTrackerStore((s) => s.entries);
+
+  const tasks = useMemo(() => allTasks.filter((t) => t.deletedAt === null), [allTasks]);
 
   const today = new Date();
   const dayOfWeek = today.getDay();
@@ -79,6 +79,19 @@ export function Dashboard() {
 
   // Check if dashboard is empty (no tasks, no logs, no routine)
   const hasNoData = tasks.length === 0 && logs.length === 0 && routineEntries.filter((e) => e.deletedAt === null).length === 0;
+
+  // Revision items due today for the suggestion section
+  const itemsDueToday = useMemo(() => {
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    const todayEndStr = todayEnd.toISOString();
+    return revisionItems.filter(
+      (s) =>
+        s.deletedAt === null &&
+        s.status !== "mastered" &&
+        s.nextReviewDate <= todayEndStr
+    );
+  }, [revisionItems]);
 
   if (hasNoData) {
     return (
@@ -228,7 +241,7 @@ export function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {getItemsDueToday().slice(0, 3).map((item) => {
+            {itemsDueToday.slice(0, 3).map((item) => {
               const subject = subjects.find((s) => s.id === item.subjectId);
               return (
                 <div key={item.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
