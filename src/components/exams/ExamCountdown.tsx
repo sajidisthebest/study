@@ -11,7 +11,6 @@ export function ExamCountdown() {
   const exams = useExamStore((s) => s.getActiveExams());
   const subjects = useSubjectStore((s) => s.subjects);
   const setExamModeActive = useSettingsStore((s) => s.setExamModeActive);
-  const examModeActive = useSettingsStore((s) => s.examModeActive);
   const [, setTick] = useState(0);
 
   // Refresh every minute
@@ -35,15 +34,11 @@ export function ExamCountdown() {
   useEffect(() => {
     if (nearestExam) {
       const daysUntil = differenceInDays(new Date(nearestExam.startDate), new Date());
-      if (daysUntil < 7 && !examModeActive) {
-        setExamModeActive(true);
-      } else if (daysUntil >= 7 && examModeActive) {
-        setExamModeActive(false);
-      }
-    } else if (examModeActive) {
+      setExamModeActive(daysUntil < 7);
+    } else {
       setExamModeActive(false);
     }
-  }, [nearestExam, examModeActive, setExamModeActive]);
+  }, [nearestExam, setExamModeActive]);
 
   if (!nearestExam) return null;
 
