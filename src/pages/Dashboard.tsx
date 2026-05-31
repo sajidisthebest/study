@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { format, differenceInDays, isToday, isPast } from "date-fns";
+import { isToday, isPast } from "date-fns";
 import {
   BookOpen,
   CheckSquare,
@@ -13,17 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useTaskStore } from "@/stores/useTaskStore";
-import { useExamStore } from "@/stores/useExamStore";
 import { useRoutineStore } from "@/stores/useRoutineStore";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 import { useRevisionStore } from "@/stores/useRevisionStore";
+import { useSettingsStore } from "@/stores/useSettingsStore";
+import { ExamCountdown } from "@/components/exams/ExamCountdown";
 
 export function Dashboard() {
   const tasks = useTaskStore((s) => s.getActiveTasks());
-  const exams = useExamStore((s) => s.getActiveExams());
   const routineEntries = useRoutineStore((s) => s.entries);
   const subjects = useSubjectStore((s) => s.subjects);
   const revisionItems = useRevisionStore((s) => s.schedules);
+  const examModeActive = useSettingsStore((s) => s.examModeActive);
+  const getItemsDueToday = useRevisionStore((s) => s.getItemsDueToday);
 
   const today = new Date();
   const dayOfWeek = today.getDay();
@@ -51,22 +53,6 @@ export function Dashboard() {
     [revisionItems]
   );
 
-  // Upcoming exam within 30 days
-  const upcomingExam = useMemo(() => {
-    const upcoming = exams
-      .filter((e) => e.type === "upcoming")
-      .filter((e) => {
-        const start = new Date(e.startDate);
-        const diff = differenceInDays(start, today);
-        return diff >= 0 && diff <= 30;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-      );
-    return upcoming[0] || null;
-  }, [exams, today]);
-
   // Today's routine
   const todayRoutine = useMemo(
     () =>
@@ -80,28 +66,19 @@ export function Dashboard() {
     <div className="space-y-4 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold">Dashboard</h1>
 
-      {/* Exam Countdown */}
-      {upcomingExam && (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 rounded-full bg-primary/10">
-              <GraduationCap className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">{upcomingExam.name}</p>
-              <p className="text-xs text-muted-foreground">
-                Starts {format(new Date(upcomingExam.startDate), "MMM d")}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-primary">
-                {differenceInDays(new Date(upcomingExam.startDate), today)}
-              </p>
-              <p className="text-xs text-muted-foreground">days left</p>
-            </div>
+      {/* Exam Mode Banner */}
+      {examModeActive && (
+        <Card className="border-red-500/50 bg-red-500/10">
+          <CardContent className="p-3 flex items-center gap-2">
+            <GraduationCap className="h-5 w-5 text-red-500" />
+            <span className="text-sm font-medium text-red-600">EXAM MODE ACTIVE</span>
+            <span className="text-xs text-muted-foreground ml-auto">Focus on exam subjects</span>
           </CardContent>
         </Card>
       )}
+
+      {/* Exam Countdown */}
+      <ExamCountdown />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">
@@ -207,16 +184,24 @@ export function Dashboard() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Brain className="h-4 w-4 text-purple-500" />
-              Suggested Reviews
+              Revision Queue
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              You have {pendingRevisions} topics ready for review.
-            </p>
+          <CardContent className="space-y-2">
+            {getItemsDueToday().slice(0, 3).map((item) => {
+              const subject = subjects.find((s) => s.id === item.subjectId);
+              return (
+                <div key={item.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {subject?.name || "?"}
+                  </Badge>
+                  <span className="text-sm flex-1 truncate">{item.topicName}</span>
+                </div>
+              );
+            })}
             <Link to="/revision">
               <Button variant="link" size="sm" className="p-0 mt-1">
-                Go to revision queue
+                Go to revision queue ({pendingRevisions} items)
               </Button>
             </Link>
           </CardContent>

@@ -67,8 +67,31 @@ export interface TrackerEntry {
   duration: number | null;
   teacherName: string | null;
   location: string | null;
+  accomplishment: string | null;
+  homework: string | null;
   createdAt: string;
   deletedAt: string | null;
+}
+
+export type TopicStatus = "not_started" | "in_progress" | "completed";
+
+export interface CollegeTopic {
+  id: string;
+  name: string;
+  status: TopicStatus;
+}
+
+export interface CollegeChapter {
+  id: string;
+  name: string;
+  topics: CollegeTopic[];
+}
+
+export interface CollegeProgress {
+  id: string;
+  subjectId: string;
+  paperId: string;
+  chapters: CollegeChapter[];
 }
 
 export interface RevisionSchedule {

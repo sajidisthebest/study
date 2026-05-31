@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Build the 3 Trackers (College, Tuition, Self Study), Revision System with spaced repetition, and the complete Exams section with past/upcoming exams, syllabus checklists, countdown, and exam mode.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/pages/Trackers.tsx - Tab container for 3 trackers: College Tracker, Tuition Tracker, Self Study Tracker. Each tab shows its respective tracker component.",
     "Create src/components/trackers/CollegeTracker.tsx - Syllabus progress tracker. Hierarchy: Subject -> Paper -> Chapter -> Topic. User adds chapters/topics per subject+paper. Mark topics as 'completed', 'in progress', 'not started'. Progress bar per chapter, per paper, per subject showing percentage. Overall progress card at top.",
