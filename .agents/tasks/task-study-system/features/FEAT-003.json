@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Build the Settings page with full UI customization (tags, columns, subjects/papers, theme, card fields), College Routine integration with weekly schedule, and Calendar view combining classes, due dates, exam dates, and revision dates.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/pages/Settings.tsx - Tabbed settings page with sections: Subjects & Papers, Tags, Columns, Card Display, Theme. Each section has full CRUD UI.",
     "Create src/components/settings/SubjectSettings.tsx - List all subjects with papers. Add new subject button. For each subject: edit name, add/remove papers, delete subject (with confirmation). Pre-populated with 7 subjects from seed data.",

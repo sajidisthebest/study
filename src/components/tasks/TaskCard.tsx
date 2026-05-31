@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { useSubjectStore } from "@/stores/useSubjectStore";
 import { useTagStore } from "@/stores/useTagStore";
+import { useSettingsStore } from "@/stores/useSettingsStore";
 import type { Task } from "@/types";
 
 interface TaskCardProps {
@@ -47,11 +48,27 @@ function getTagColor(color: string): string {
   const colors: Record<string, string> = {
     red: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
     orange: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+    yellow: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
     green: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
     purple: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
     blue: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    pink: "bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300",
+    gray: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
   };
   return colors[color] || "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300";
+}
+
+function getUrgencyBorderColor(urgency: Task["urgency"]): string {
+  switch (urgency) {
+    case "critical":
+      return "border-l-red-500";
+    case "high":
+      return "border-l-orange-500";
+    case "medium":
+      return "border-l-yellow-500";
+    default:
+      return "border-l-transparent";
+  }
 }
 
 export function TaskCard({
@@ -65,6 +82,19 @@ export function TaskCard({
   const [hovered, setHovered] = useState(false);
   const subjects = useSubjectStore((s) => s.subjects);
   const tags = useTagStore((s) => s.tags);
+  const cardDisplayFields = useSettingsStore((s) => s.cardDisplayFields);
+
+  // Default fields if none configured
+  const fields = cardDisplayFields.length > 0
+    ? cardDisplayFields
+    : ["subject", "paper", "dueDate", "tags", "urgency"];
+
+  const showSubject = fields.includes("subject");
+  const showPaper = fields.includes("paper");
+  const showDueDate = fields.includes("dueDate");
+  const showTags = fields.includes("tags");
+  const showDescription = fields.includes("description");
+  const showUrgency = fields.includes("urgency");
 
   const subject = subjects.find((s) => s.id === task.subjectId);
   const paper = subject?.papers.find((p) => p.id === task.paperId);
@@ -73,9 +103,10 @@ export function TaskCard({
   return (
     <Card
       className={cn(
-        "p-3 transition-all",
+        "p-3 transition-all border-l-4",
         selected && "ring-2 ring-primary",
-        hovered && "shadow-md"
+        hovered && "shadow-md",
+        showUrgency ? getUrgencyBorderColor(task.urgency) : "border-l-transparent"
       )}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -89,25 +120,32 @@ export function TaskCard({
           />
         )}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            {subject && (
-              <Badge
-                variant="secondary"
-                className={cn("text-xs", getSubjectColor(subject.name))}
-              >
-                {subject.name}
-              </Badge>
-            )}
-            {paper && (
-              <span className="text-xs text-muted-foreground">
-                {paper.name}
-              </span>
-            )}
-          </div>
+          {(showSubject || showPaper) && (
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              {showSubject && subject && (
+                <Badge
+                  variant="secondary"
+                  className={cn("text-xs", getSubjectColor(subject.name))}
+                >
+                  {subject.name}
+                </Badge>
+              )}
+              {showPaper && paper && (
+                <span className="text-xs text-muted-foreground">
+                  {paper.name}
+                </span>
+              )}
+            </div>
+          )}
           <p className="text-sm font-medium leading-tight line-clamp-2">
             {task.topic}
           </p>
-          {task.dueDate && (
+          {showDescription && task.description && (
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+              {task.description}
+            </p>
+          )}
+          {showDueDate && task.dueDate && (
             <p className={cn("text-xs mt-1", getDueDateColor(task.dueDate))}>
               {isPast(new Date(task.dueDate)) && !isToday(new Date(task.dueDate))
                 ? "Overdue: "
@@ -117,7 +155,7 @@ export function TaskCard({
               {format(new Date(task.dueDate), "MMM d")}
             </p>
           )}
-          {taskTags.length > 0 && (
+          {showTags && taskTags.length > 0 && (
             <div className="flex gap-1 mt-1.5 flex-wrap">
               {taskTags.map((tag) => (
                 <span

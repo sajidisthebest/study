@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Task } from "@/types";
-import { generateId, calculateDueCategory } from "@/lib/utils";
+import { generateId, calculateDueCategory, isDueTonightByRoutine } from "@/lib/utils";
 
 interface TaskState {
   tasks: Task[];
@@ -13,6 +13,7 @@ interface TaskState {
   moveTask: (id: string, columnId: string) => void;
   getActiveTasks: () => Task[];
   getTasksByColumn: (columnId: string) => Task[];
+  getDueTonightTasks: (routineEntries: { subjectId: string; dayOfWeek: number }[]) => Task[];
 }
 
 function calculateUrgency(dueDate: string | null): Task["urgency"] {
@@ -96,6 +97,13 @@ export const useTaskStore = create<TaskState>()(
       getTasksByColumn: (columnId) =>
         get().tasks.filter(
           (t) => t.deletedAt === null && t.columnId === columnId
+        ),
+      getDueTonightTasks: (routineEntries) =>
+        get().tasks.filter(
+          (t) =>
+            t.deletedAt === null &&
+            t.status !== "completed" &&
+            isDueTonightByRoutine(t.subjectId, routineEntries)
         ),
     }),
     { name: "task-storage" }

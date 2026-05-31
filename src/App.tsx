@@ -8,6 +8,7 @@ import { Trackers } from "@/pages/Trackers";
 import { Revision } from "@/pages/Revision";
 import { Exams } from "@/pages/Exams";
 import { CalendarPage } from "@/pages/CalendarPage";
+import { Routine } from "@/pages/Routine";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/trackers" element={<Trackers />} />
           <Route path="/revision" element={<Revision />} />
           <Route path="/exams" element={<Exams />} />
+          <Route path="/routine" element={<Routine />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>

@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { format, isToday, isTomorrow, isThisWeek, isPast } from "date-fns";
+import { format, isToday, isTomorrow, isThisWeek, isPast, addDays } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,4 +32,20 @@ export function calculateDueCategory(dueDate: string | null): string {
 
 export function generateId(): string {
   return uuidv4();
+}
+
+/**
+ * Check if a subject has a class tomorrow based on routine entries.
+ * Used to auto-flag tasks as "due tonight" if homework for that subject
+ * has not been completed.
+ */
+export function isDueTonightByRoutine(
+  subjectId: string,
+  routineEntries: { subjectId: string; dayOfWeek: number }[]
+): boolean {
+  const tomorrow = addDays(new Date(), 1);
+  const tomorrowDay = tomorrow.getDay();
+  return routineEntries.some(
+    (entry) => entry.subjectId === subjectId && entry.dayOfWeek === tomorrowDay
+  );
 }

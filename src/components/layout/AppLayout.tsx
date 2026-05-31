@@ -7,6 +7,7 @@ import {
   Brain,
   GraduationCap,
   Calendar,
+  Clock,
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ const navItems = [
   { to: "/trackers", icon: Activity, label: "Trackers" },
   { to: "/revision", icon: Brain, label: "Revision" },
   { to: "/exams", icon: GraduationCap, label: "Exams" },
+  { to: "/routine", icon: Clock, label: "Routine" },
   { to: "/calendar", icon: Calendar, label: "Calendar" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
