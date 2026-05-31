@@ -1,0 +1,7 @@
+{
+  "task_id": "task-study-system",
+  "task_description": "Build a complete personal study system web app for a Bangladeshi college student. React + TypeScript + Tailwind + Zustand with localStorage persistence. Features: daily log input, smart to-do with list/board views, drag-drop Kanban, bulk actions, 3 trackers (college/tuition/self-study), spaced repetition revision system, exam management with countdown and exam mode, calendar integration, full UI customization (tags/columns/subjects/themes), college routine, and statistics. Mobile-first, deployed via Netlify.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005"],
+  "blocked_reason": null
+}

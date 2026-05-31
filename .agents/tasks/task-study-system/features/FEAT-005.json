@@ -1,0 +1,39 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Polish, extras, and final integration: notifications/reminders, study streaks, statistics dashboard, global search, Supabase schema SQL file, and final build verification.",
+  "status": "pending",
+  "steps": [
+    "Create src/components/common/GlobalSearch.tsx - Command palette (Cmd+K / Ctrl+K) that searches across all data: tasks, daily logs, exams, tracker entries, revision items. Uses shadcn Command component. Shows results grouped by type with navigation.",
+    "Create src/components/stats/StatsPanel.tsx - Statistics overview: total study hours this week, tasks completed this week, revision items reviewed, current study streak (consecutive days with logged activity), subject-wise time distribution bar chart, completion rate percentage.",
+    "Implement study streak system in useSettingsStore.ts - Track consecutive days with any activity (daily log, task completion, study session, revision). Show streak count on dashboard. Fire confetti animation on milestone streaks (7, 14, 30 days).",
+    "Create src/components/common/NotificationBanner.tsx - In-app notification banners: (1) 'You have X tasks due tonight' on page load, (2) 'Exam in X days - activate study mode?' prompt, (3) 'Revision items pending' reminder, (4) 'Great streak! X days!' celebration.",
+    "Create database/schema.sql - Complete Supabase/Postgres schema with all tables, RLS policies, indexes. Tables: users, subjects, papers, topics, tasks, tags, task_tags, columns, daily_logs, tracker_entries (with type enum), revision_schedules, exams, exam_subjects, routines, settings. Include comments explaining each table. This is for future backend integration.",
+    "Create database/seed.sql - SQL seed data matching the localStorage seed: 7 subjects with papers, default columns, default tags.",
+    "Final integration pass: ensure all pages link correctly, navigation works on all routes, dark mode applies globally, accent colors propagate, mobile responsive on all pages, no console errors in build.",
+    "Add loading states and empty states to all pages - when no data exists, show helpful onboarding text explaining what the section does and a CTA to add first item.",
+    "Create src/components/common/UndoToast.tsx - Reusable undo toast component used by soft delete across all entities. Shows for 5 seconds with progress bar animation.",
+    "Verify the final build: run npm run build, ensure dist/ is produced, ensure no TypeScript errors, ensure all imports resolve"
+  ],
+  "acceptance_criteria": [
+    "Global search (Cmd+K) opens command palette and finds items across all data types",
+    "Stats panel shows study hours, completion rates, streak count",
+    "Study streak tracks consecutive active days and shows on dashboard",
+    "Notification banners appear for due tasks, upcoming exams, and pending revisions",
+    "database/schema.sql contains complete Postgres schema with all tables and RLS",
+    "database/seed.sql contains matching seed data",
+    "All pages have proper empty states with onboarding guidance",
+    "Undo toast appears on all delete actions with 5-second countdown",
+    "npm run build succeeds with zero errors",
+    "dist/index.html exists after build",
+    "No TypeScript compilation errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/study && npm run build",
+    "test -f /projects/sandbox/study/dist/index.html",
+    "test -f /projects/sandbox/study/database/schema.sql",
+    "test -f /projects/sandbox/study/database/seed.sql"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

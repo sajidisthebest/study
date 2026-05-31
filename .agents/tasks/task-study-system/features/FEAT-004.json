@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Build the 3 Trackers (College, Tuition, Self Study), Revision System with spaced repetition, and the complete Exams section with past/upcoming exams, syllabus checklists, countdown, and exam mode.",
+  "status": "pending",
+  "steps": [
+    "Create src/pages/Trackers.tsx - Tab container for 3 trackers: College Tracker, Tuition Tracker, Self Study Tracker. Each tab shows its respective tracker component.",
+    "Create src/components/trackers/CollegeTracker.tsx - Syllabus progress tracker. Hierarchy: Subject -> Paper -> Chapter -> Topic. User adds chapters/topics per subject+paper. Mark topics as 'completed', 'in progress', 'not started'. Progress bar per chapter, per paper, per subject showing percentage. Overall progress card at top.",
+    "Create src/components/trackers/TuitionTracker.tsx - Finance + Accounting tuition tracking only. Log tutor lessons: date, subject, paper, topic covered, homework from tutor, notes. List view of past lessons. Link tuition homework to main task system.",
+    "Create src/components/trackers/SelfStudyTracker.tsx - Log self-study sessions: date, subject, paper, topic, duration (minutes), notes, what was accomplished. Weekly summary chart showing hours per subject. Streak counter for consecutive study days.",
+    "Create src/stores/useTrackerStore.ts - Manages all 3 tracker types. CollegeProgress: { subjectId, paperId, chapters: [{ name, topics: [{ name, status }] }] }. TuitionEntry: { date, subjectId, paperId, topic, homework, notes }. SelfStudyEntry: { date, subjectId, paperId, topic, duration, notes }.",
+    "Create src/pages/Revision.tsx - Spaced repetition dashboard. Shows: (1) Today's revision queue - topics due for review today, (2) Upcoming revisions this week, (3) Completed revisions history. Each revision card shows topic, subject, last reviewed date, review number (1st, 2nd, 3rd...).",
+    "Implement spaced repetition logic in src/stores/useRevisionStore.ts - When user marks topic 'studied' anywhere (tracker, daily log), it enters revision queue. Schedule: Day 1, Day 3, Day 7, Day 14, Day 30 after initial study. Track review count. Allow manual reschedule by dragging to different date.",
+    "Create src/components/revision/RevisionCard.tsx - Shows topic name, subject, paper, days since last review, review number in sequence, 'Mark Reviewed' button (advances to next interval), 'Skip' button, 'Remove from queue' button.",
+    "Create src/pages/Exams.tsx - Tab container: Past Exams, Upcoming Exams, Exam Syllabus. Plus exam countdown widget visible on all tabs.",
+    "Create src/components/exams/PastExams.tsx - Log past exams: date, subject, paper, total marks, obtained marks, percentage auto-calculated, notes/reflection. Table view with sorting. Performance chart per subject over time.",
+    "Create src/components/exams/UpcomingExams.tsx - Add upcoming exam: name, start date, end date, subjects included. Upload exam routine as image (stored as base64 in localStorage). Countdown timer to next exam. List of all upcoming exams sorted by date.",
+    "Create src/components/exams/ExamSyllabus.tsx - Per exam: select subjects -> per subject+paper -> chapter checklist. Check off chapters as prepared. Progress percentage per subject for the exam. Links to college tracker data.",
+    "Implement Exam Mode in useExamStore.ts and useTaskStore.ts - When an exam is <7 days away, auto-activate exam mode: (1) Filter tasks to show exam subjects first, (2) Boost revision frequency for exam subjects, (3) Show 'EXAM MODE' banner on dashboard, (4) Countdown prominent on all pages.",
+    "Create src/components/exams/ExamCountdown.tsx - Displays days/hours/minutes to next upcoming exam. Shows exam name and subjects. Animated countdown. Used on dashboard and exams page.",
+    "If no pending tasks exist for current view, show 'Revision Queue' section with today's revision items as suggestion on dashboard and tasks page"
+  ],
+  "acceptance_criteria": [
+    "College tracker shows hierarchical progress: subject > paper > chapter > topic with percentage bars",
+    "Tuition tracker logs lessons for Finance and Accounting with all fields",
+    "Self study tracker logs sessions with duration and shows weekly summary",
+    "Revision system auto-queues topics after marking as studied",
+    "Spaced repetition follows 1-3-7-14-30 day schedule",
+    "Marking a revision as reviewed advances it to next interval",
+    "Past exams can be logged with marks and show performance data",
+    "Upcoming exams show countdown and accept image upload for routine",
+    "Exam syllabus provides chapter checklists per subject+paper per exam",
+    "Exam mode activates when exam <7 days: banner shown, exam subjects prioritized",
+    "Revision queue shown when no pending tasks",
+    "npm run build succeeds without errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/study && npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Build the Daily Log Input Dashboard, Smart To-Do List with List/Board views, bulk actions, drag-drop Kanban board, and the main dashboard page with urgency sections and exam countdown.",
+  "status": "pending",
+  "steps": [
+    "Create src/pages/DailyLog.tsx - Quick input form: subject dropdown -> paper dropdown (conditional on subject) -> 'what was taught' textarea -> 'homework' textarea -> due date picker -> save button. Form auto-creates a Task entry from homework. Mobile-optimized with large touch targets.",
+    "Create src/pages/Dashboard.tsx - Main dashboard showing: (1) Exam countdown card if active exam <30 days, (2) 'Due Tonight' task cards at top, (3) Mini calendar widget showing today's classes and due items, (4) Quick input shortcut button to daily log, (5) Stats summary (tasks due, revision pending, streak).",
+    "Create src/components/tasks/TaskCard.tsx - Reusable card showing: subject badge (colored), paper label, topic text, due date with urgency color (red=tonight, orange=this week, yellow=upcoming, gray=pending), tags as small badges, checkbox for selection, delete button, edit button. Swipeable on mobile.",
+    "Create src/pages/Tasks.tsx - Container page with toggle button (List/Board icons) to switch views. Includes filter bar: subject, paper, tag, urgency dropdowns + search input. Has 'Add Task' floating action button.",
+    "Create src/components/tasks/ListView.tsx - Classic to-do list using TanStack Table. Sections grouped by urgency category: 'Due Tonight', 'Due This Week', 'Upcoming', 'Pending'. Each section collapsible. Shows task cards in rows. Bulk action toolbar appears when tasks selected: select all per section, bulk delete, bulk move, bulk tag.",
+    "Create src/components/tasks/BoardView.tsx - Kanban board using @dnd-kit. Columns from useColumnStore (default: Due Tonight, This Week, Upcoming, Pending, Done). Each column shows task cards. Drag-drop tasks between columns. Column header shows count. Swipe horizontal on mobile. Add column button.",
+    "Create src/components/tasks/BulkActionBar.tsx - Sticky bottom bar that appears when tasks selected. Shows: selected count, 'Select All' toggle, 'Delete' button, 'Move to...' dropdown, 'Tag...' dropdown, 'Clear Selection' button.",
+    "Implement soft delete with undo: when tasks deleted, show toast with 'Undo' button for 5 seconds. After 5s, mark deletedAt permanently. Use Zustand store action.",
+    "Create src/components/tasks/TaskForm.tsx - Modal/sheet form for adding/editing tasks manually. Fields: subject, paper, topic, description, due date, tags (multi-select), column assignment. Used by both daily log auto-create and manual add.",
+    "Implement auto-categorization logic in useTaskStore: tasks auto-assigned to urgency columns based on due date relative to current time. 'Due Tonight' = due today, 'This Week' = due within 7 days, 'Upcoming' = due within 30 days, 'Pending' = no date or >30 days.",
+    "Add optimistic updates to all task mutations - state updates immediately, no loading spinners for local operations"
+  ],
+  "acceptance_criteria": [
+    "Daily log form saves entries and auto-creates tasks from homework",
+    "Dashboard shows due-tonight tasks, exam countdown, and quick actions",
+    "List view renders tasks grouped by urgency with collapsible sections",
+    "Board view renders draggable columns with task cards that can be moved between columns via drag-drop",
+    "Toggle between list and board view preserves task state",
+    "Bulk select works: select multiple tasks, bulk delete, bulk move, bulk tag",
+    "Soft delete shows undo toast for 5 seconds before permanent deletion",
+    "Filters work: filtering by subject, paper, tag narrows displayed tasks",
+    "Search finds tasks by topic text",
+    "Task form allows manual task creation with all fields",
+    "Mobile layout: bottom nav, large buttons, horizontal scroll on board",
+    "npm run build succeeds without errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/study && npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

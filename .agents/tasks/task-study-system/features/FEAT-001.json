@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Initialize Vite React TypeScript project with all dependencies, configure Tailwind CSS, shadcn/ui, Zustand, @dnd-kit, TanStack Table, and set up project structure with types, stores, routing, and seed data.",
+  "status": "in_progress",
+  "steps": [
+    "Initialize Vite project with React + TypeScript template in /projects/sandbox/study/ using 'npm create vite@latest . -- --template react-ts'",
+    "Install core dependencies: react-router-dom, zustand, @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities, @tanstack/react-table, date-fns, lucide-react, uuid, clsx, tailwind-merge",
+    "Install dev dependencies: tailwindcss, postcss, autoprefixer, @types/uuid",
+    "Configure Tailwind CSS with tailwind.config.ts including custom colors for dark/light themes and accent colors",
+    "Set up shadcn/ui: install and configure with components.json, install ui primitives (button, card, input, select, dialog, dropdown-menu, checkbox, badge, tabs, toast, calendar, popover, sheet, separator, switch, label, textarea, scroll-area, command)",
+    "Create netlify.toml with SPA redirect rules: [[redirects]] from='/*' to='/index.html' status=200",
+    "Create TypeScript types in src/types/index.ts covering all entities: Subject, Paper, Topic, Task, Tag, Column, DailyLog, TrackerEntry, RevisionSchedule, Exam, ExamSubject, Routine, Settings, Theme. All entities have soft delete flag (deletedAt).",
+    "Create Zustand stores with persist middleware in src/stores/: useSubjectStore.ts, useTaskStore.ts, useTagStore.ts, useColumnStore.ts, useDailyLogStore.ts, useTrackerStore.ts, useRevisionStore.ts, useExamStore.ts, useRoutineStore.ts, useSettingsStore.ts. Each store handles CRUD + soft delete with undo.",
+    "Create seed data in src/data/seed.ts: 7 subjects (Bangla, English, ICT, Finance, Accounting, Management, Marketing) with paper splits as specified. Default columns: 'Due Tonight', 'This Week', 'Upcoming', 'Pending', 'Done'. Default tags: 'Urgent', 'Important', 'Easy', 'Hard', 'Review'. Sample exam and routine entries.",
+    "Set up React Router in src/App.tsx with routes: / (dashboard), /tasks (to-do list/board), /daily-log (input), /trackers (3 trackers), /revision (spaced repetition), /exams (exam section), /calendar, /settings",
+    "Create src/lib/utils.ts with helper functions: cn() for classnames, formatDate, getUrgencyColor, calculateDueCategory, generateId",
+    "Create a responsive layout shell in src/components/layout/AppLayout.tsx with mobile bottom navigation bar and desktop sidebar",
+    "Set up dark/light mode with system preference detection in src/stores/useSettingsStore.ts, applying theme class to document"
+  ],
+  "acceptance_criteria": [
+    "npm run build completes without errors and produces dist/index.html",
+    "All TypeScript types compile without errors",
+    "Zustand stores initialize with seed data on first load",
+    "Dark/light mode toggle works",
+    "React Router navigates between all defined routes",
+    "netlify.toml exists with proper SPA redirect",
+    "Tailwind CSS classes render correctly",
+    "Mobile bottom nav and desktop sidebar layout renders"
+  ],
+  "verification": [
+    "cd /projects/sandbox/study && npm run build",
+    "test -f /projects/sandbox/study/dist/index.html",
+    "test -f /projects/sandbox/study/netlify.toml"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

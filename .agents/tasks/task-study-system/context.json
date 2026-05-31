@@ -1,0 +1,27 @@
+{
+  "project_type": "React SPA with TypeScript, Tailwind CSS, Zustand state management",
+  "language": "TypeScript",
+  "build_system": "Vite - output to dist/ for Netlify deployment",
+  "test_framework": "Vitest (included with Vite ecosystem)",
+  "build_command": "npm run build",
+  "test_command": "npm run build",
+  "verification_instructions": "1. Run npm run build to ensure production build succeeds. 2. Check dist/ directory exists with index.html. 3. Verify TypeScript compiles without errors.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "1. cd /projects/sandbox/study 2. nvm use 22 3. npm install 4. npm run dev (for development) 5. npm run build (for production)",
+  "environment_constraints": "OPEN_INTERNET - all packages installable freely. Node.js v22 via nvm. Deploy target: Netlify with SPA redirects.",
+  "contribution_requirements": "Standard Vite React project structure. Mobile-first design. Local-first with localStorage persistence via Zustand.",
+  "key_patterns": "Zustand stores with persist middleware for state. shadcn/ui for components. @dnd-kit for drag-drop. TanStack Table for list views. Modular feature-based directory structure.",
+  "relevant_files": [
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/stores/",
+    "src/components/",
+    "src/pages/",
+    "src/types/",
+    "src/lib/",
+    "vite.config.ts",
+    "tailwind.config.ts",
+    "netlify.toml"
+  ],
+  "directory_structure": "src/ - main source. src/components/ - reusable UI components. src/pages/ - page-level components. src/stores/ - Zustand stores. src/types/ - TypeScript interfaces. src/lib/ - utilities. src/data/ - seed data. public/ - static assets."
+}

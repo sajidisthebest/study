@@ -1,0 +1,39 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Build the Settings page with full UI customization (tags, columns, subjects/papers, theme, card fields), College Routine integration with weekly schedule, and Calendar view combining classes, due dates, exam dates, and revision dates.",
+  "status": "pending",
+  "steps": [
+    "Create src/pages/Settings.tsx - Tabbed settings page with sections: Subjects & Papers, Tags, Columns, Card Display, Theme. Each section has full CRUD UI.",
+    "Create src/components/settings/SubjectSettings.tsx - List all subjects with papers. Add new subject button. For each subject: edit name, add/remove papers, delete subject (with confirmation). Pre-populated with 7 subjects from seed data.",
+    "Create src/components/settings/TagSettings.tsx - List all tags with color swatches. Add new tag: name input + color picker. Edit existing: rename, change color. Delete with confirmation. Tags shown as preview badges.",
+    "Create src/components/settings/ColumnSettings.tsx - List board columns in order. Add new column. Rename existing. Delete (moves tasks to 'Pending'). Reorder via drag-drop using @dnd-kit.",
+    "Create src/components/settings/CardDisplaySettings.tsx - Toggle switches for which fields show on task cards: subject, paper, topic, due date, tags, urgency indicator, description preview. Saved in useSettingsStore.",
+    "Create src/components/settings/ThemeSettings.tsx - Dark/light/system mode selector. Accent color picker with preset colors (blue, purple, green, orange, pink, red) plus custom hex input. Preview of selected theme. Applies immediately.",
+    "Create src/pages/Routine.tsx - Weekly class routine editor. Grid layout: days (Sat-Fri for Bangladesh week) x time slots. Click cell to add class: subject, paper, time start, time end. Edit/delete existing. Visual timetable display.",
+    "Create src/stores/useRoutineStore.ts - Store routine entries: { id, subjectId, paperId, dayOfWeek, startTime, endTime }. Helper function: getClassesForDay(day), getNextClass(), isClassToday(subjectId).",
+    "Implement 'due tonight' auto-calculation using routine: if a subject has class tomorrow, homework for that subject due tonight gets auto-flagged. Logic in useTaskStore referencing routine data.",
+    "Create src/pages/Calendar.tsx - Monthly calendar view using a custom calendar grid (not a library). Shows: colored dots for classes (from routine), due date markers, exam date markers, revision due markers. Click on day to see details sidebar/modal with all items for that day.",
+    "Create src/components/calendar/DayDetail.tsx - Shows all items for a selected day: classes scheduled, tasks due, exams, revision items. Each item clickable to navigate to its section.",
+    "Add filter functionality to calendar: toggle visibility of classes, tasks, exams, revision items via filter checkboxes above calendar"
+  ],
+  "acceptance_criteria": [
+    "Settings page renders all sections with tabs",
+    "User can add/edit/delete subjects and papers from UI",
+    "User can create custom tags with colors, edit and delete them",
+    "User can add/rename/delete/reorder board columns from settings",
+    "Card display toggles hide/show fields on task cards in both list and board views",
+    "Theme switcher changes dark/light mode and accent color immediately",
+    "Routine editor allows setting weekly class schedule",
+    "Routine data used to auto-flag due-tonight tasks",
+    "Calendar shows monthly view with colored markers for different item types",
+    "Clicking a day in calendar shows all items for that day",
+    "Calendar filters work to show/hide item types",
+    "npm run build succeeds without errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/study && npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
